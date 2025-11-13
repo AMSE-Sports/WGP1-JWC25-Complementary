@@ -8,9 +8,8 @@
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
   <script>
-    // TODO: แก้เป็นของ Project ที่คุณใช้จริง
-    const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
+    const SUPABASE_URL = 'https://mhecpnqwwxspxfhdvzsc.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZWNwbnF3d3hzcHhmaGR2enNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMDc0MjEsImV4cCI6MjA3ODU4MzQyMX0.ONaEMqU6BHuMSywE3Yvtbj78NqBbecI18amsD18Cgnc';
 
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   </script>
@@ -148,8 +147,29 @@
         <div class="row">
           <div>
             <label class="title">Ticket Code<span class="en"> / รหัสบัตร Complimentary</span> *</label>
-            <input id="ticket_code" required placeholder="เช่น 25-00001">
-            <div class="note">กรอกรหัสตามที่ระบุบนบัตร Complimentary เช่น 25-00001</div>
+
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="
+                background:#f3f4f6;
+                padding:10px 14px;
+                border-radius:12px;
+                border:1px solid var(--border);
+                font-weight:600;
+              ">25-</span>
+
+              <input id="ticket_code_suffix"
+                     type="text"
+                     maxlength="5"
+                     pattern="^[0-9]{5}$"
+                     required
+                     placeholder="กรอก 5 หลัก เช่น 00001"
+                     style="flex:1;">
+            </div>
+
+            <div class="note">กรอกเฉพาะตัวเลข 5 หลักท้ายของรหัส Complimentary เช่น 00001</div>
+
+            <!-- full ticket code 25-xxxxx -->
+            <input type="hidden" id="ticket_code">
           </div>
         </div>
 
@@ -501,11 +521,48 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // ประกอบ Ticket Code = 25-xxxxx จาก suffix
+    (function initTicketCode() {
+      const suffixInput = document.getElementById('ticket_code_suffix');
+      const fullCodeHidden = document.getElementById('ticket_code');
+
+      suffixInput.addEventListener('input', function () {
+        // ให้เป็นตัวเลขเท่านั้น
+        this.value = this.value.replace(/[^0-9]/g, '');
+
+        // จำกัดความยาว 5 หลัก
+        if (this.value.length > 5) {
+          this.value = this.value.slice(0, 5);
+        }
+
+        // ถ้าครบ 5 หลักค่อยเซ็ต ticket_code เต็ม
+        if (this.value.length === 5) {
+          fullCodeHidden.value = '25-' + this.value;
+        } else {
+          fullCodeHidden.value = '';
+        }
+      });
+    })();
+
     // Submit -> Supabase insert
     document.getElementById('comp-form').addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      // ตรวจอย่างน้อย 1 วัน
+      // ==== ตรวจสอบ Ticket Code (5 หลัก + ประกอบรหัส) ====
+      const suffixInput = document.getElementById('ticket_code_suffix');
+      const fullCodeHidden = document.getElementById('ticket_code');
+      const ticketSuffix = (suffixInput.value || '').trim();
+
+      if (!/^[0-9]{5}$/.test(ticketSuffix)) {
+        alert('กรุณากรอกเลข 5 หลักท้ายของรหัสบัตร (เฉพาะตัวเลข 0–9) เช่น 00001');
+        suffixInput.focus();
+        return;
+      }
+
+      const ticketCode = '25-' + ticketSuffix;
+      fullCodeHidden.value = ticketCode;
+
+      // ==== ตรวจอย่างน้อย 1 วัน ====
       var dayChecks = document.querySelectorAll('#attend_days_group input[type=checkbox]');
       var selectedDays = [];
       dayChecks.forEach(function (ch) {
@@ -513,6 +570,29 @@
       });
       if (selectedDays.length === 0) {
         alert('กรุณาเลือกวันที่จะเข้าร่วมอย่างน้อย 1 วัน / Please select at least one day.');
+        return;
+      }
+
+      // ==== เช็คเลขซ้ำบน Supabase ====
+      try {
+        const { error: dupError, count } = await sb
+          .from('complementary_tickets')   // ให้ตรงกับชื่อตารางใน Supabase
+          .select('id', { count: 'exact', head: true })
+          .eq('ticket_code', ticketCode);
+
+        if (dupError) {
+          console.error('Duplicate check error:', dupError);
+          alert('ไม่สามารถตรวจสอบรหัสบัตรได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง หรือแจ้งเจ้าหน้าที่');
+          return;
+        }
+
+        if (count && count > 0) {
+          alert('รหัสบัตร ' + ticketCode + ' ถูกใช้ไปแล้ว กรุณาใช้หมายเลขอื่น');
+          return;
+        }
+      } catch (err) {
+        console.error('Unexpected duplicate check error:', err);
+        alert('เกิดข้อผิดพลาดในการตรวจสอบรหัสบัตร กรุณาลองใหม่อีกครั้ง');
         return;
       }
 
@@ -524,7 +604,7 @@
       var payload = {
         submitted_at: new Date().toISOString(),
 
-        ticket_code: document.getElementById('ticket_code').value.trim() || null,
+        ticket_code: ticketCode,
 
         guest_title: document.getElementById('guest_title').value || null,
         guest_fullname_th: document.getElementById('guest_fullname_th').value.trim() || null,
@@ -550,7 +630,13 @@
 
         if (error) {
           console.error('Supabase insert error:', error);
-          alert('บันทึกข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง หรือแจ้งเจ้าหน้าที่\n\nError: ' + error.message);
+
+          // ถ้าเจอ unique violation เผื่อกรณี race condition/กดซ้ำ
+          if (error.code === '23505') {
+            alert('รหัสบัตร ' + ticketCode + ' ถูกใช้ไปแล้วในระบบ กรุณาใช้หมายเลขอื่นหรือรีเช็กกับเจ้าหน้าที่');
+          } else {
+            alert('บันทึกข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง หรือแจ้งเจ้าหน้าที่\n\nError: ' + error.message);
+          }
         } else {
           document.getElementById('comp-form').reset();
           showScreen('screen-thank');
