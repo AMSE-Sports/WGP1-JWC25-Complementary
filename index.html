@@ -228,18 +228,29 @@ label.consent-check {
   font-size: var(--font-base);
 }
 
-    .inline-checks { 
-      display:flex; 
-      flex-wrap:wrap; 
-      gap:10px 18px; 
-      font-size:var(--font-base);
-    }
-    .inline-checks label { 
-      display:flex; 
-      align-items:center; 
-      gap:6px; 
-      font-size:var(--font-base); 
-    }
+    /* ปรับ layout ให้วันที่อยู่เป็นบล็อกแนวตั้ง และ checkbox จัดตรงกลางใต้ข้อความ */
+.inline-checks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;   /* กระจายแต่ละวันให้กว้างเท่า ๆ กัน */
+  gap: 12px 24px;
+}
+
+.inline-checks label {
+  display: flex;
+  flex-direction: column;           /* ข้อความอยู่บน, checkbox อยู่ล่าง */
+  align-items: center;
+  text-align: center;
+  font-size: calc(var(--font-base) * 0.9);  /* ย่อฟอนต์ลงเล็กน้อยให้ไม่ดันเละ */
+  line-height: 1.25;
+}
+
+/* ขยาย checkbox ให้ใหญ่และอยู่ใต้ข้อความอย่างสวยงาม */
+.inline-checks input[type="checkbox"] {
+  width: 30px;
+  height: 30px;
+  margin-top: 6px;
+}
 
     .section-title {
       font-weight:900; 
