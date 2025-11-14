@@ -187,11 +187,16 @@
     }
 
     label.consent-check { 
-      display:flex; 
-      gap:10px; 
-      align-items:flex-start; 
-      font-size:var(--font-base);
-    }
+  display:flex; 
+  gap:10px; 
+  align-items:center;      /* ✅ ให้กล่องอยู่กึ่งกลางกับข้อความ */
+  font-size:var(--font-base);
+}
+
+label.consent-check input[type="checkbox"] {
+  margin-top:0;            /* ✅ ไม่ต้องดันขึ้นไป */
+  flex:0 0 auto;
+}
     label.consent-check input[type="checkbox"] {
       margin-top:3px;
       flex:0 0 auto;
