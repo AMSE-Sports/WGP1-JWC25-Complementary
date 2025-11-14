@@ -206,12 +206,26 @@ label.consent-check input[type="checkbox"] {
       line-height:1.5;
     }
 
-    input[type="checkbox"],
-input[type="radio"] {
-  width: auto;
-  transform: scale(1.3);           /* ขยายขนาดประมาณ 30% */
-  transform-origin: center left;   /* ให้ขยายแล้วไม่ล้นขึ้นข้างบน */
+    /* ขยาย Checkbox ให้ใหญ่ขึ้น และจัดให้อยู่กลางข้อความ 2 บรรทัด */
+.consent-check input[type="checkbox"] {
+  width: 32px;
+  height: 32px;
   accent-color: var(--primary);
+}
+
+/* ให้ checkbox + ข้อความ ตรงศูนย์กลางในแนวตั้ง */
+label.consent-check {
+  display: flex;
+  align-items: center;     /* สำคัญที่สุด */
+  gap: 16px;
+}
+
+/* แสดงข้อความเป็น 2 บรรทัด (ไทย + อังกฤษ) */
+.consent-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.35;
+  font-size: var(--font-base);
 }
 
     .inline-checks { 
@@ -620,9 +634,12 @@ input[type="radio"] {
 </button>
             </div>
             <label class="consent-check">
-              <input type="checkbox" id="pdpa_consent" required>
-              <span>ฉันได้อ่านและยินยอมให้จัดเก็บและใช้ข้อมูลส่วนบุคคลตามที่ระบุไว้ • I have read and consent to the use of my personal data.</span>
-            </label>
+  <input type="checkbox" id="pdpa_consent" required>
+  <span class="consent-text">
+    <span>ฉันได้อ่านและยินยอมให้จัดเก็บและใช้ข้อมูลส่วนบุคคลตามที่ระบุไว้</span>
+    <span>I have read and consent to the use of my personal data.</span>
+  </span>
+</label>
           </div>
         </div>
 
@@ -630,9 +647,12 @@ input[type="radio"] {
           <div>
             <label class="title">การบันทึกภาพและวิดีโอ<span class="en"> / Media (Photo & Video) Consent</span> *</label>
             <label class="consent-check">
-              <input type="checkbox" id="media_consent" required>
-              <span>ฉันได้อ่านและยินยอมตามเงื่อนไขการบันทึกภาพและวิดีโอข้างต้น • I have read and consent to the media conditions above.</span>
-            </label>
+  <input type="checkbox" id="media_consent" required>
+  <span class="consent-text">
+    <span>ฉันได้อ่านและยินยอมตามเงื่อนไขการบันทึกภาพและวิดีโอข้างต้น</span>
+    <span>I have read and consent to the media conditions above.</span>
+  </span>
+</label>
           </div>
         </div>
 
