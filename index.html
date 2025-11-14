@@ -201,7 +201,13 @@
       line-height:1.5;
     }
 
-    input[type="checkbox"], input[type="radio"] { width:auto; }
+    input[type="checkbox"],
+input[type="radio"] {
+  width: auto;
+  transform: scale(1.3);           /* ขยายขนาดประมาณ 30% */
+  transform-origin: center left;   /* ให้ขยายแล้วไม่ล้นขึ้นข้างบน */
+  accent-color: var(--primary);
+}
 
     .inline-checks { 
       display:flex; 
