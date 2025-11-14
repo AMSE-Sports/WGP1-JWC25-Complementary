@@ -236,20 +236,27 @@ label.consent-check {
   gap: 12px 24px;
 }
 
-.inline-checks label {
+/* จัด checkbox และข้อความให้อยู่ในบรรทัดเดียวกัน */
+.inline-checks {
   display: flex;
-  flex-direction: column;           /* ข้อความอยู่บน, checkbox อยู่ล่าง */
-  align-items: center;
-  text-align: center;
-  font-size: calc(var(--font-base) * 0.9);  /* ย่อฟอนต์ลงเล็กน้อยให้ไม่ดันเละ */
-  line-height: 1.25;
+  flex-wrap: wrap;
+  gap: 18px 30px;
 }
 
-/* ขยาย checkbox ให้ใหญ่และอยู่ใต้ข้อความอย่างสวยงาม */
+.inline-checks label {
+  display: flex;
+  align-items: center;    /* ให้ checkbox อยู่ระดับเดียวกับข้อความ */
+  gap: 10px;
+  font-size: calc(var(--font-base) * 0.95);
+  white-space: nowrap;    /* กัน text ตกบรรทัด */
+}
+
+/* ปรับ checkbox ให้เล็กลง */
 .inline-checks input[type="checkbox"] {
-  width: 30px;
-  height: 30px;
-  margin-top: 6px;
+  width: 22px;   /* เดิม 30px */
+  height: 22px;  /* เดิม 30px */
+  transform: scale(1);    /* เอาการขยายออก */
+  accent-color: var(--primary);
 }
 
     .section-title {
