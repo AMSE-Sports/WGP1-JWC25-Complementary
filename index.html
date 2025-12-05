@@ -494,21 +494,36 @@ const sessionData = {
         </div>
 
         <div class="section-title">D. Consent • การยินยอม</div>
-        <div class="row">
-          <div>
-            <p class="note">
-              การเข้าชมงานถือเป็นการยินยอมให้ผู้จัดงานบันทึกภาพนิ่ง/วิดีโอ/เสียง เพื่อใช้ในการถ่ายทอดสด
-              ประชาสัมพันธ์ และสื่ออื่น ๆ โดยไม่ต้องขออนุญาตหรือจ่ายค่าตอบแทนเพิ่มเติม
-            </p>
-            <label class="consent-check">
-              <input type="checkbox" id="paper-consent" required>
-              <span class="consent-text">
-                <span>ฉันได้อ่านและยินยอมตามเงื่อนไขข้างต้น</span>
-                <span>I have read and consent to the conditions above.</span>
-              </span>
-            </label>
-          </div>
-        </div>
+<div class="row">
+  <div>
+
+    <!-- ✅ ข้อความ Consent แบบละเอียด -->
+    <div class="note" style="margin-bottom:10px; line-height:1.55;">
+      <strong>TH: การบันทึกภาพและวิดีโอ</strong><br>
+      ในการเข้าชมการแข่งขัน WGP#1 Waterjet World Cup 2025 ซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก
+      ท่านยินยอมให้ผู้จัดงานและพันธมิตร สามารถบันทึกภาพนิ่ง วิดีโอ และเสียงของท่าน เพื่อใช้ในสื่อประชาสัมพันธ์
+      โฆษณา ถ่ายทอดสด และสื่ออื่น ๆ โดยไม่ต้องขออนุญาตหรือจ่ายค่าตอบแทนใด ๆ เพิ่มเติม
+      การเข้าสู่พื้นที่จัดงานถือเป็นการให้ความยินยอมโดยสมบูรณ์ หากไม่ประสงค์ให้ถูกบันทึกภาพ
+      โปรดหลีกเลี่ยงบริเวณกล้องหรือพื้นที่ถ่ายทอดสด
+      <br><br>
+      <strong>EN: Media (Photo & Video)</strong><br>
+      By attending the WGP#1 Waterjet World Cup 2025, which includes live broadcasting and global media coverage,
+      you grant the event organizers and their partners the right to photograph, film, and record your image and voice
+      for use in promotions, advertising, live streams, and other media—without the need for further consent or compensation.
+      Entering the event area constitutes full and unconditional consent. If you do not wish to appear in such media,
+      please avoid camera zones or broadcast areas.
+    </div>
+
+    <!-- ✅ Checkbox ยืนยัน Consent -->
+    <label class="consent-check">
+      <input type="checkbox" id="paper-consent" required>
+      <span class="consent-text">
+        <span>ฉันได้อ่านและยินยอมตามเงื่อนไขสื่อ/ข้อมูลส่วนบุคคลข้างต้น</span>
+        <span>I have read and consent to the media &amp; data conditions above.</span>
+      </span>
+    </label>
+  </div>
+</div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;">
           <button type="button" class="btn outline" id="back-from-paper">
@@ -554,36 +569,54 @@ const sessionData = {
         <div id="digital-note" class="note" style="margin-top:6px;"></div>
 
         <div class="section-title" style="margin-top:20px;">B. Confirm & Consent</div>
-        <div class="row">
-          <div id="digital-selected-box" class="hidden">
-            <p class="note">
-              รายการที่เลือก:
-              <span id="digital-selected-name" style="font-weight:700;"></span>
-              <span id="digital-selected-meta" class="badge-small"></span>
-            </p>
+<div class="row">
+  <div id="digital-selected-box" class="hidden">
+    <p class="note">
+      รายการที่เลือก:
+      <span id="digital-selected-name" style="font-weight:700;"></span>
+      <span id="digital-selected-meta" class="badge-small"></span>
+    </p>
 
-            <label class="consent-check">
-              <input type="checkbox" id="digital-consent">
-              <span class="consent-text">
-                <span>ฉันยืนยันการใช้สิทธิ์ Digital Complimentary และยินยอมตามเงื่อนไขสื่อ/ข้อมูลส่วนบุคคล</span>
-                <span>I confirm to redeem this Digital Complimentary and consent to the media & data conditions.</span>
-              </span>
-            </label>
+    <!-- ✅ ข้อความ Consent แบบละเอียด -->
+    <div class="note" style="margin-bottom:10px; line-height:1.55;">
+      <strong>TH: การบันทึกภาพและวิดีโอ</strong><br>
+      ในการเข้าชมการแข่งขัน WGP#1 Waterjet World Cup 2025 ซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก
+      ท่านยินยอมให้ผู้จัดงานและพันธมิตร สามารถบันทึกภาพนิ่ง วิดีโอ และเสียงของท่าน เพื่อใช้ในสื่อประชาสัมพันธ์
+      โฆษณา ถ่ายทอดสด และสื่ออื่น ๆ โดยไม่ต้องขออนุญาตหรือจ่ายค่าตอบแทนใด ๆ เพิ่มเติม
+      การเข้าสู่พื้นที่จัดงานถือเป็นการให้ความยินยอมโดยสมบูรณ์ หากไม่ประสงค์ให้ถูกบันทึกภาพ
+      โปรดหลีกเลี่ยงบริเวณกล้องหรือพื้นที่ถ่ายทอดสด
+      <br><br>
+      <strong>EN: Media (Photo & Video)</strong><br>
+      By attending the WGP#1 Waterjet World Cup 2025, which includes live broadcasting and global media coverage,
+      you grant the event organizers and their partners the right to photograph, film, and record your image and voice
+      for use in promotions, advertising, live streams, and other media—without the need for further consent or compensation.
+      Entering the event area constitutes full and unconditional consent. If you do not wish to appear in such media,
+      please avoid camera zones or broadcast areas.
+    </div>
 
-            <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
-              <button class="btn outline" id="back-from-digital">
-                ◀ กลับไปหน้าเจ้าหน้าที่ • Back
-              </button>
-              <button class="btn primary" id="digital-confirm-btn">
-                ยืนยันรับสิทธิ์ • Confirm Redemption
-              </button>
-            </div>
-          </div>
+    <!-- ✅ Checkbox ยืนยัน Consent -->
+    <label class="consent-check">
+      <input type="checkbox" id="digital-consent" required>
+      <span class="consent-text">
+        <span>ฉันยืนยันการใช้สิทธิ์ Digital Complimentary และยินยอมตามเงื่อนไขสื่อ/ข้อมูลส่วนบุคคลข้างต้น</span>
+        <span>I confirm to redeem this Digital Complimentary and consent to the media &amp; data conditions above.</span>
+      </span>
+    </label>
 
-          <div id="digital-wait-box" class="note">
-            กรุณาค้นหาและเลือกชื่อผู้ลงทะเบียนก่อน จากนั้นจึงให้ผู้รับสิทธิ์อ่านและยืนยัน Consent
-          </div>
-        </div>
+    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn outline" id="back-from-digital">
+        ◀ กลับไปหน้าเจ้าหน้าที่ • Back
+      </button>
+      <button class="btn primary" id="digital-confirm-btn">
+        ยืนยันรับสิทธิ์ • Confirm Redemption
+      </button>
+    </div>
+  </div>
+
+  <div id="digital-wait-box" class="note">
+    กรุณาค้นหาและเลือกชื่อผู้ลงทะเบียนก่อน จากนั้นจึงให้ผู้รับสิทธิ์อ่านและยืนยัน Consent
+  </div>
+</div>
       </div>
     </div>
   </section>
