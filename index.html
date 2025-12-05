@@ -19,7 +19,7 @@
       staffName: '',
       checkinDay: '',
       compType: '',       // 'paper' | 'digital'
-      digitalGuest: null  // เก็บ object ผู้ที่ค้นหาเจอใน flow digital
+      digitalGuest: null  // เก็บ object ผู้ที่ค้นหาเจอใน flow digital (จาก hotel_complimentary_tickets)
     };
   </script>
 
@@ -145,7 +145,6 @@
     }
     .btn.dark { background:#111; color:#fff; }
     .btn.wide { width:100%; }
-
     .btn.outline {
       background:#fff;
       border:1px solid #d1d5db;
@@ -177,7 +176,6 @@
       color:#b45309;
     }
 
-    /* radio แบ่งประเภท Complimentary */
     .comp-type-group {
       display:flex;
       flex-direction:column;
@@ -198,7 +196,6 @@
       height:22px;
       accent-color:var(--primary);
     }
-
     .comp-type-text strong {
       display:block;
       font-size:var(--font-base);
@@ -209,7 +206,6 @@
       color:#6b7280;
     }
 
-    /* thank screen */
     .thankfull {
       min-height:70vh;
       display:flex;
@@ -237,7 +233,6 @@
       margin:0;
     }
 
-    /* consent */
     label.consent-check {
       display:flex;
       gap:16px;
@@ -251,7 +246,6 @@
       flex:0 0 auto;
       margin-top:4px;
     }
-
     .consent-text span {
       display:block;
       line-height:1.35;
@@ -275,7 +269,6 @@
       accent-color:var(--primary);
     }
 
-    /* digital search results */
     .result-list {
       margin-top:10px;
       border-radius:14px;
@@ -289,22 +282,17 @@
       cursor:pointer;
     }
     .result-item:last-child { border-bottom:none; }
-    .result-item:hover {
-      background:#f9fafb;
-    }
+    .result-item:hover { background:#f9fafb; }
     .result-item.selected {
       background:#fef3c7;
       border-left:4px solid #f59e0b;
       padding-left:8px;
     }
-    .result-name {
-      font-weight:700;
-    }
+    .result-name { font-weight:700; }
     .result-meta {
       font-size:var(--font-note);
       color:#6b7280;
     }
-
     .badge-small {
       display:inline-block;
       background:#111827;
@@ -369,7 +357,7 @@
               <input type="radio" name="comp-type" value="paper" required>
               <div class="comp-type-text">
                 <strong>Complimentary Ticket (25-XXXXX)</strong>
-                <span>บัตร Complimentary Ticket แบบกระดาษ มีเลขรันขึ้นต้นด้วย 25-XXXXX</span>
+                <span>บัตร Complimentary Ticket แบบกระดาษ มีเลขรันขึ้นต้นด้วย 25-XXXXX (กรอกโดยเจ้าหน้าที่)</span>
               </div>
             </label>
 
@@ -400,7 +388,7 @@
       <div class="head">
         <h2>Part 2 — Complimentary Ticket (25-XXXXX)</h2>
         <p class="note">
-          ผู้รับสิทธิ์กรอกข้อมูลเพื่อออกตั๋ว Complimentary ใหม่
+          ให้เจ้าหน้าที่กรอกเลข 25-XXXXX ก่อน แล้วจึงส่งให้ผู้รับสิทธิ์กรอกข้อมูลส่วนตัว
         </p>
       </div>
 
@@ -425,7 +413,7 @@
                      placeholder="กรอก 5 หลัก เช่น 00001"
                      style="flex:1;">
             </div>
-            <div class="note">กรอกเฉพาะตัวเลข 5 หลักท้ายของรหัสบัตร เช่น 00001</div>
+            <div class="note">*ส่วนนี้กรอกโดยเจ้าหน้าที่ • เฉพาะตัวเลข 5 หลักท้ายของรหัสบัตร เช่น 00001</div>
           </div>
         </div>
 
@@ -487,22 +475,7 @@
           </div>
         </div>
 
-        <div class="section-title">D. Attendance • วันที่เข้าร่วม</div>
-        <div class="row">
-          <div>
-            <label class="title">เลือกวันที่จะเข้าร่วม (เลือกได้มากกว่า 1 วัน) *</label>
-            <div class="inline-checks" id="paper-days">
-              <label><input type="checkbox" value="Wed 17 Dec">Wed 17</label>
-              <label><input type="checkbox" value="Thu 18 Dec">Thu 18</label>
-              <label><input type="checkbox" value="Fri 19 Dec">Fri 19</label>
-              <label><input type="checkbox" value="Sat 20 Dec">Sat 20</label>
-              <label><input type="checkbox" value="Sun 21 Dec">Sun 21</label>
-            </div>
-            <div class="note">ควรเลือกอย่างน้อย 1 วัน</div>
-          </div>
-        </div>
-
-        <div class="section-title">E. Consent • การยินยอม</div>
+        <div class="section-title">D. Consent • การยินยอม</div>
         <div class="row">
           <div>
             <p class="note">
@@ -539,7 +512,7 @@
       <div class="head">
         <h2>Part 2 — Digital Complimentary (H-XXXX)</h2>
         <p class="note">
-          ค้นหาข้อมูลผู้ลงทะเบียนจากเว็บไซต์โรงแรม แล้วให้ผู้รับสิทธิ์ยืนยัน Consent
+          ค้นหาข้อมูลผู้ลงทะเบียนจากเว็บไซต์โรงแรม (hotel_complimentary_tickets) แล้วให้ผู้รับสิทธิ์ยืนยัน Consent
         </p>
       </div>
 
@@ -547,11 +520,11 @@
         <div class="section-title">A. Search • ค้นหาผู้ลงทะเบียน</div>
         <div class="row two">
           <div>
-            <label class="title">ชื่อ-นามสกุล<span class="en"> / Full Name</span> *</label>
+            <label class="title">ชื่อ-นามสกุล<span class="en"> / Full Name</span></label>
             <input id="digital-search-name" placeholder="เช่น John Smith / สมชาย ใจดี">
           </div>
           <div>
-            <label class="title">รหัส H-XXXX (ถ้ามี)<span class="en"> / H-Code (optional)</span></label>
+            <label class="title">รหัส H-XXXX (registration_ref)<span class="en"> / H-Code</span></label>
             <input id="digital-search-code" placeholder="เช่น H-0123">
           </div>
         </div>
@@ -676,16 +649,8 @@
         return;
       }
 
-      const dayChecks = document.querySelectorAll('#paper-days input[type=checkbox]');
-      const days = [];
-      dayChecks.forEach(ch => { if (ch.checked) days.push(ch.value); });
-      if (!days.length) {
-        alert('กรุณาเลือกอย่างน้อย 1 วันที่จะเข้าร่วม');
-        return;
-      }
-
       if (!document.getElementById('paper-consent').checked) {
-        alert('กรุณายืนยันการยินยอมก่อน');
+        alert('กรุณาให้ผู้รับสิทธิ์ติ๊กยืนยันการยินยอมก่อน');
         return;
       }
 
@@ -694,32 +659,34 @@
       btn.textContent = 'กำลังบันทึก... / Saving...';
       btn.disabled = true;
 
+      // payload ให้ตรงกับตาราง complementary_tickets
       const payload = {
         submitted_at: new Date().toISOString(),
 
-        ticket_code: ticketCode,
-        comp_type: 'paper',           // TODO: สร้าง column comp_type, staff_name, checkin_day บน Supabase ให้ตรง
+        comp_type: 'paper',
         staff_name: sessionData.staffName || null,
-        checkin_day: sessionData.checkinDay || null,
+        checkin_day: sessionData.checkinDay || null,  // ใช้วันจาก Staff
+        ticket_code: ticketCode,
+        hotel_ticket_id: null,
 
-        guest_fullname_th: first + ' ' + last,
-        guest_fullname_en: null,
+        guest_first_name: first,
+        guest_last_name: last,
         guest_gender: document.getElementById('paper-gender').value || null,
-        guest_age_range: document.getElementById('paper-age').value || null,
+        guest_age_group: document.getElementById('paper-age').value || null,
 
-        contact_email: null,
         contact_phone: document.getElementById('paper-phone').value.trim() || null,
+        contact_email: null,
         guest_country: document.getElementById('paper-country').value.trim() || null,
         guest_city: document.getElementById('paper-city').value.trim() || null,
 
-        attend_days: days.join(', '),
+        attend_days: null,        // ไม่ต้องให้กรอกซ้ำ
         media_consent: true
       };
 
       try {
         const { error } = await sb
           .from('complementary_tickets')
-          .insert([payload]);  // TODO: table name ตามเดิมของคุณ
+          .insert([payload]);
 
         if (error) {
           console.error('Supabase insert error (paper):', error);
@@ -749,30 +716,47 @@
     const waitBox    = document.getElementById('digital-wait-box');
 
     document.getElementById('digital-search-btn').addEventListener('click', async () => {
-      const name = document.getElementById('digital-search-name').value.trim();
-      const code = document.getElementById('digital-search-code').value.trim();
+      const nameInput = document.getElementById('digital-search-name').value.trim();
+      const codeInput = document.getElementById('digital-search-code').value.trim();
 
-      if (!name && !code) {
+      if (!nameInput && !codeInput) {
         alert('กรุณากรอกอย่างน้อย ชื่อ-นามสกุล หรือรหัส H-XXXX ก่อนค้นหา');
         return;
       }
 
       resultsBox.innerHTML = '';
       resultsBox.classList.add('hidden');
+      selectedBox.classList.add('hidden');
+      waitBox.classList.remove('hidden');
       noteBox.textContent = 'กำลังค้นหา... / Searching...';
+      sessionData.digitalGuest = null;
 
       try {
-        // TODO: ปรับชื่อ table / column ให้ตรงกับ Supabase ของคุณ
-        const query = sb
-          .from('digital_comps_pre_register')  // <- สมมุติ table
+        let query = sb
+          .from('hotel_complimentary_tickets')        // ใช้ตาราง Hotel จริง
           .select('*')
           .limit(30);
 
-        if (name) {
-          query.ilike('full_name', '%' + name + '%');
+        // ค้นหาตามชื่อ
+        if (nameInput) {
+          const parts = nameInput.split(/\s+/).filter(Boolean);
+          if (parts.length >= 2) {
+            const first = parts[0];
+            const last  = parts.slice(1).join(' ');
+            query = query
+              .ilike('first_name', `%${first}%`)
+              .ilike('last_name', `%${last}%`);
+          } else {
+            // ค้นจาก first_name หรือ last_name ตัวใดตัวหนึ่ง
+            query = query.or(
+              `first_name.ilike.%${nameInput}%,last_name.ilike.%${nameInput}%`
+            );
+          }
         }
-        if (code) {
-          query.eq('ticket_code', code);
+
+        // ค้นหาตาม registration_ref (H-code)
+        if (codeInput) {
+          query = query.ilike('registration_ref', `%${codeInput}%`);
         }
 
         const { data, error } = await query;
@@ -788,19 +772,20 @@
           return;
         }
 
-        noteBox.textContent = 'พบ ' + data.length + ' รายการ กรุณาเลือก 1 รายการ';
+        noteBox.textContent = `พบ ${data.length} รายการ กรุณาเลือก 1 รายการ`;
         resultsBox.classList.remove('hidden');
         resultsBox.innerHTML = '';
 
         data.forEach(row => {
+          const fullName = `${row.first_name || ''} ${row.last_name || ''}`.trim();
           const item = document.createElement('div');
           item.className = 'result-item';
           item.dataset.id = row.id;
 
           item.innerHTML = `
-            <div class="result-name">${row.full_name || '(ไม่ระบุชื่อ)'}</div>
+            <div class="result-name">${fullName || '(ไม่ระบุชื่อ)'}</div>
             <div class="result-meta">
-              Email: ${row.email || '-'} • Phone: ${row.phone || '-'} • Code: ${row.ticket_code || '-'}
+              Hotel: ${row.hotel_name || '-'} • Phone: ${row.phone || '-'} • H-Code: ${row.registration_ref || '-'}
             </div>
           `;
 
@@ -810,9 +795,9 @@
             sessionData.digitalGuest = row;
 
             document.getElementById('digital-selected-name').textContent =
-              row.full_name || '(ไม่ระบุชื่อ)';
+              fullName || '(ไม่ระบุชื่อ)';
             document.getElementById('digital-selected-meta').textContent =
-              (row.ticket_code ? 'H-code: ' + row.ticket_code : '');
+              row.registration_ref ? `H-Code: ${row.registration_ref}` : '';
 
             selectedBox.classList.remove('hidden');
             waitBox.classList.add('hidden');
@@ -845,26 +830,30 @@
       btn.textContent = 'กำลังบันทึก... / Saving...';
       btn.disabled = true;
 
+      // payload ผูกกับ hotel_complimentary_tickets ผ่าน hotel_ticket_id
+      const fullName = `${g.first_name || ''} ${g.last_name || ''}`.trim();
+
       const payload = {
         submitted_at: new Date().toISOString(),
 
-        ticket_code: g.ticket_code || null,
         comp_type: 'digital',
         staff_name: sessionData.staffName || null,
         checkin_day: sessionData.checkinDay || null,
-        linked_reg_id: g.id || null,   // TODO: เพิ่ม column นี้ใน Supabase ถ้าต้องการ
 
-        guest_fullname_th: g.full_name || null,
-        guest_fullname_en: null,
+        ticket_code: g.registration_ref || null,   // ใช้ registration_ref เป็น H-code
+        hotel_ticket_id: g.id || null,
+
+        guest_first_name: g.first_name || null,
+        guest_last_name: g.last_name || null,
         guest_gender: g.gender || null,
-        guest_age_range: g.age_range || null,
+        guest_age_group: g.age_group || null,
 
-        contact_email: g.email || null,
         contact_phone: g.phone || null,
+        contact_email: null,
         guest_country: g.country || null,
-        guest_city: g.city || null,
+        guest_city: g.thai_province || g.country || null,
 
-        attend_days: null,  // ใน digital สมมุติว่าอยู่ในระบบเดิมแล้ว
+        attend_days: null,      // ข้อมูลวันเข้าพักอยู่ฝั่งโรงแรม/ Staff checkin_day
         media_consent: true
       };
 
@@ -900,7 +889,6 @@
 
     // ---------- DONE: back to start ----------
     document.getElementById('done-back-to-start').addEventListener('click', () => {
-      // reset ทุกอย่างแบบง่าย ๆ
       document.getElementById('staff-form').reset();
       document.getElementById('paper-form').reset();
       sessionData.staffName = '';
