@@ -9,9 +9,18 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
   <script>
     const SUPABASE_URL = 'https://mhecpnqwwxspxfhdvzsc.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZWNwbnF3d3hzcHhmaGR2enNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMDc0MjEsImV4cCI6MjA3ODU4MzQyMX0.ONaEMqU6BHuMSywE3Yvtbj78NqBbecI18amsD18Cgnc';
+    const SUPABASE_ANON_KEY =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZWNwbnF3d3hzcHhmaGR2enNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMDc0MjEsImV4cCI6MjA3ODU4MzQyMX0.ONaEMqU6BHuMSywE3Yvtbj78NqBbecI18amsD18Cgnc';
 
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // เก็บค่าระหว่าง Part 1/Part 2
+    const sessionData = {
+      staffName: '',
+      checkinDay: '',
+      compType: '',       // 'paper' | 'digital'
+      digitalGuest: null  // เก็บ object ผู้ที่ค้นหาเจอใน flow digital
+    };
   </script>
 
   <style>
@@ -20,11 +29,9 @@
       --border:#ececec;
       --ok:#16a34a;
 
-      /* +30% */
       --font-base:    clamp(19px, 2.1vw, 23px);
       --font-label:   clamp(18px, 1.8vw, 22px);
       --font-title:   clamp(26px, 3.1vw, 36px);
-      --font-section: clamp(19px, 2.1vw, 25px);
       --font-note:    clamp(14px, 1.6vw, 18px);
     }
 
@@ -75,6 +82,8 @@
     }
     .head .note {
       margin-top:6px;
+      font-size:var(--font-note);
+      color:#6b7280;
     }
 
     .body { padding:24px 20px; }
@@ -137,14 +146,18 @@
     .btn.dark { background:#111; color:#fff; }
     .btn.wide { width:100%; }
 
+    .btn.outline {
+      background:#fff;
+      border:1px solid #d1d5db;
+      color:#111827;
+    }
+
     .note {
       color:#666;
       font-size:var(--font-note);
     }
 
-    .hidden {
-      display:none !important;
-    }
+    .hidden { display:none !important; }
 
     .footer {
       padding:12px 16px;
@@ -153,6 +166,50 @@
       font-size:var(--font-note);
     }
 
+    .section-title {
+      font-weight:900;
+      font-size:clamp(19px,2.1vw,25px);
+      margin:12px 0;
+      padding:10px 14px;
+      border-radius:14px;
+      background:#fff7f1;
+      border:1px solid #ffe0c4;
+      color:#b45309;
+    }
+
+    /* radio แบ่งประเภท Complimentary */
+    .comp-type-group {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .comp-type-option {
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid #e5e7eb;
+      background:#f9fafb;
+    }
+    .comp-type-option input[type="radio"] {
+      margin-top:6px;
+      width:22px;
+      height:22px;
+      accent-color:var(--primary);
+    }
+
+    .comp-type-text strong {
+      display:block;
+      font-size:var(--font-base);
+    }
+    .comp-type-text span {
+      display:block;
+      font-size:var(--font-note);
+      color:#6b7280;
+    }
+
+    /* thank screen */
     .thankfull {
       min-height:70vh;
       display:flex;
@@ -180,60 +237,82 @@
       margin:0;
     }
 
-    .consent-desc {
-      line-height:1.55;
-      margin-bottom:10px;
-      font-size:var(--font-base);
-    }
-
-    /* Checkbox consent */
+    /* consent */
     label.consent-check {
       display:flex;
       gap:16px;
-      align-items:center;
+      align-items:flex-start;
       font-size:var(--font-base);
     }
     .consent-check input[type="checkbox"] {
-      width:32px;
-      height:32px;
+      width:28px;
+      height:28px;
       accent-color:var(--primary);
       flex:0 0 auto;
-    }
-    .consent-text {
-      display:flex;
-      flex-direction:column;
-      line-height:1.35;
-      font-size:var(--font-base);
+      margin-top:4px;
     }
 
-    /* Attendance days inline */
+    .consent-text span {
+      display:block;
+      line-height:1.35;
+    }
+
     .inline-checks {
       display:flex;
       flex-wrap:wrap;
-      gap:18px 30px;
+      gap:14px 24px;
     }
     .inline-checks label {
       display:flex;
       align-items:center;
-      gap:10px;
-      font-size:calc(var(--font-base) * 0.95);
+      gap:8px;
+      font-size:calc(var(--font-base)*0.95);
       white-space:nowrap;
     }
     .inline-checks input[type="checkbox"] {
-      width:22px;
-      height:22px;
+      width:20px;
+      height:20px;
       accent-color:var(--primary);
     }
 
-    .section-title {
-      font-weight:900;
-      font-size:var(--font-section);
-      margin:12px 0;
-      padding:10px 14px;
+    /* digital search results */
+    .result-list {
+      margin-top:10px;
       border-radius:14px;
-      background:#fff7f1;
-      border:1px solid #ffe0c4;
-      color:#b45309;
+      border:1px solid #e5e7eb;
+      max-height:260px;
+      overflow-y:auto;
+    }
+    .result-item {
+      padding:10px 12px;
+      border-bottom:1px solid #e5e7eb;
+      cursor:pointer;
+    }
+    .result-item:last-child { border-bottom:none; }
+    .result-item:hover {
+      background:#f9fafb;
+    }
+    .result-item.selected {
+      background:#fef3c7;
+      border-left:4px solid #f59e0b;
+      padding-left:8px;
+    }
+    .result-name {
+      font-weight:700;
+    }
+    .result-meta {
+      font-size:var(--font-note);
+      color:#6b7280;
+    }
+
+    .badge-small {
+      display:inline-block;
+      background:#111827;
+      color:#fff;
+      border-radius:999px;
+      padding:4px 10px;
+      font-size:12px;
+      margin-left:6px;
     }
   </style>
 </head>
@@ -243,24 +322,93 @@
     <img src="Header.png" alt="WGP#1 Waterjet World Cup 2025 Header">
   </div>
 
-  <!-- SCREEN 1: FORM -->
-  <section id="screen-form" class="screen container">
+  <!-- =========================== -->
+  <!-- SCREEN 1 : STAFF (PART 1)  -->
+  <!-- =========================== -->
+  <section id="screen-staff" class="screen container">
     <div class="card">
       <div class="head">
-        <h2 style="margin:0;">Complementary Ticket Registration</h2>
-        <p class="note" style="margin:4px 0 0;">
-          แบบฟอร์มลงทะเบียนผู้รับบัตร Complimentary สำหรับเข้าร่วมงาน WGP#1 Waterjet World Cup 2025
+        <h2>Part 1 — Staff</h2>
+        <p class="note">
+          เจ้าหน้าที่กรอกข้อมูลเบื้องต้น ก่อนดำเนินการให้ผู้รับสิทธิ์ Complimentary
         </p>
       </div>
 
-      <form class="body" id="comp-form">
-        <!-- A. Ticket Info -->
-        <div class="section-title">A. Ticket Info • ข้อมูลตัวบัตร</div>
+      <form class="body" id="staff-form">
+        <div class="section-title">A. Staff • เจ้าหน้าที่ผู้รับเรื่อง</div>
+        <div class="row two">
+          <div>
+            <label class="title">เจ้าหน้าที่<span class="en"> / Staff</span> *</label>
+            <select id="staff-name" required>
+              <option value="">— เลือกเจ้าหน้าที่ / Select —</option>
+              <option>เจ้าหน้าที่ A</option>
+              <option>เจ้าหน้าที่ B</option>
+              <option>เจ้าหน้าที่ C</option>
+              <option>เจ้าหน้าที่ D</option>
+              <option>เจ้าหน้าที่ E</option>
+              <option>เจ้าหน้าที่ F</option>
+            </select>
+          </div>
+          <div>
+            <label class="title">วันเช็คอิน<span class="en"> / Check-in Date</span> *</label>
+            <select id="checkin-day" required>
+              <option value="">— เลือกวันเข้า / Select —</option>
+              <option value="2025-12-17">Wed 17 Dec 2025</option>
+              <option value="2025-12-18">Thu 18 Dec 2025</option>
+              <option value="2025-12-19">Fri 19 Dec 2025</option>
+              <option value="2025-12-20">Sat 20 Dec 2025</option>
+              <option value="2025-12-21">Sun 21 Dec 2025</option>
+            </select>
+          </div>
+        </div>
 
+        <div class="section-title">B. Complimentary Type • ช่องทางการได้รับสิทธิ์</div>
+        <div class="row">
+          <div class="comp-type-group">
+            <label class="comp-type-option">
+              <input type="radio" name="comp-type" value="paper" required>
+              <div class="comp-type-text">
+                <strong>Complimentary Ticket (25-XXXXX)</strong>
+                <span>บัตร Complimentary Ticket แบบกระดาษ มีเลขรันขึ้นต้นด้วย 25-XXXXX</span>
+              </div>
+            </label>
+
+            <label class="comp-type-option">
+              <input type="radio" name="comp-type" value="digital">
+              <div class="comp-type-text">
+                <strong>Digital Complimentary (H-XXXX)</strong>
+                <span>ได้รับจากการลงทะเบียนผ่านเว็บไซต์โรงแรม มีเลขอ้างอิง H-XXXX</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" class="btn primary wide">
+          ดำเนินการต่อ • Continue
+        </button>
+      </form>
+    </div>
+
+    <div class="footer">© 2025 WGP#1 • Complimentary Flow</div>
+  </section>
+
+  <!-- ======================================= -->
+  <!-- SCREEN 2 : PAPER FORM (PART 2 - NEW)   -->
+  <!-- ======================================= -->
+  <section id="screen-paper" class="screen container hidden">
+    <div class="card">
+      <div class="head">
+        <h2>Part 2 — Complimentary Ticket (25-XXXXX)</h2>
+        <p class="note">
+          ผู้รับสิทธิ์กรอกข้อมูลเพื่อออกตั๋ว Complimentary ใหม่
+        </p>
+      </div>
+
+      <form class="body" id="paper-form">
+        <div class="section-title">A. Ticket Code • รหัสบัตร</div>
         <div class="row">
           <div>
-            <label class="title">Ticket Code<span class="en"> / รหัสบัตร Complimentary</span> *</label>
-
+            <label class="title">รหัสบัตร Complimentary (25-XXXXX) *</label>
             <div style="display:flex; align-items:center; gap:6px;">
               <span style="
                 background:#f3f4f6;
@@ -269,8 +417,7 @@
                 border:1px solid var(--border);
                 font-weight:600;
               ">25-</span>
-
-              <input id="ticket_code_suffix"
+              <input id="paper-ticket-suffix"
                      type="text"
                      maxlength="5"
                      pattern="^[0-9]{5}$"
@@ -278,281 +425,447 @@
                      placeholder="กรอก 5 หลัก เช่น 00001"
                      style="flex:1;">
             </div>
-
-            <div class="note">กรอกเฉพาะตัวเลข 5 หลักท้ายของรหัส Complimentary เช่น 00001</div>
-            <input type="hidden" id="ticket_code">
+            <div class="note">กรอกเฉพาะตัวเลข 5 หลักท้ายของรหัสบัตร เช่น 00001</div>
           </div>
         </div>
 
-        <!-- B. Guest Info -->
-        <div class="section-title">B. Guest Info • ข้อมูลผู้รับบัตร</div>
-
+        <div class="section-title">B. Guest Info • ข้อมูลผู้รับสิทธิ์</div>
         <div class="row two">
           <div>
-            <label class="title">ชื่อจริง (TH/EN)<span class="en"> / First Name (TH/EN)</span> *</label>
-            <input id="guest_firstname_th" required>
+            <label class="title">ชื่อจริง (TH/EN)<span class="en"> / First Name</span> *</label>
+            <input id="paper-firstname" required>
           </div>
           <div>
-            <label class="title">นามสกุล (TH/EN)<span class="en"> / Last Name (TH/EN)</span> *</label>
-            <input id="guest_lastname_th" required>
+            <label class="title">นามสกุล (TH/EN)<span class="en"> / Last Name</span> *</label>
+            <input id="paper-lastname" required>
           </div>
         </div>
 
-        <div class="note" style="margin-top:-8px; margin-bottom:16px;">
-          กรุณากรอกชื่อ–นามสกุลตามบัตรประชาชนหรือหนังสือเดินทาง • Please use your legal first and last name.
-        </div>
-
-        <!-- เพศ + ช่วงอายุ -->
         <div class="row two">
           <div>
             <label class="title">เพศ<span class="en"> / Gender</span> *</label>
-            <select id="guest_gender" required>
-              <option value="">— เลือกเพศ / Select —</option>
+            <select id="paper-gender" required>
+              <option value="">— Select —</option>
               <option value="Male">ชาย / Male</option>
               <option value="Female">หญิง / Female</option>
               <option value="Other">ไม่ระบุ / Other</option>
             </select>
           </div>
           <div>
-            <label class="title">อายุ<span class="en"> / Age Range</span> *</label>
-            <select id="guest_age_range" required>
-              <option value="">— เลือกช่วงอายุ / Select —</option>
-              <option value="Under 18">ต่ำกว่า 18 ปี / Under 18 Yrs.</option>
-              <option value="18-25">18–25 ปี / 18–25 Yrs.</option>
-              <option value="26-40">26–40 ปี / 26–40 Yrs.</option>
-              <option value="41-60">41–60 ปี / 41–60 Yrs.</option>
-              <option value="60+">60 ปีขึ้นไป / 60+ Yrs.</option>
+            <label class="title">ช่วงอายุ<span class="en"> / Age Range</span> *</label>
+            <select id="paper-age" required>
+              <option value="">— Select —</option>
+              <option value="Under 18">Under 18</option>
+              <option value="18-25">18–25</option>
+              <option value="26-40">26–40</option>
+              <option value="41-60">41–60</option>
+              <option value="60+">60+</option>
             </select>
           </div>
         </div>
 
-        <!-- C. Contact Info -->
-        <div class="section-title">C. Contact Info • ข้อมูลติดต่อ</div>
-
+        <div class="section-title">C. Contact • ข้อมูลติดต่อ</div>
         <div class="row two">
           <div>
-            <label class="title">เบอร์โทรศัพท์ / Phone No. *</label>
-            <input id="contact_phone" required placeholder="+66 ... / +...">
+            <label class="title">เบอร์โทรศัพท์ / Phone *</label>
+            <input id="paper-phone" required placeholder="+66 ... / +...">
           </div>
           <div>
-            <label class="title">ประเทศที่พำนัก<span class="en"> / Country of Residence</span> *</label>
-            <select id="guest_country" required>
-              <option value="">— เลือกประเทศ / Select Country —</option>
-              <!-- รายชื่อประเทศ ตามเดิม (ตัดไม่ให้ยาวเกินในตัวอย่าง) -->
-              <option value="Thailand">Thailand</option>
-              <option value="Australia">Australia</option>
-              <option value="Japan">Japan</option>
-              <option value="United Kingdom">United Kingdom</option>
-              <option value="United States">United States</option>
-              <!-- … ที่เหลือคงไว้ตามโค้ดเดิมของคุณ … -->
-            </select>
+            <label class="title">ประเทศที่พำนัก<span class="en"> / Country</span> *</label>
+            <input id="paper-country" required placeholder="เช่น Thailand">
           </div>
         </div>
 
         <div class="row">
           <div>
             <label class="title">เมือง / จังหวัด<span class="en"> / City</span> *</label>
-            <input id="guest_city" required
+            <input id="paper-city"
+                   required
                    pattern="[\u0E00-\u0E7F a-zA-Z\- ]+"
                    placeholder="เช่น Bangkok / Pattaya">
-            <div class="note">
-              รองรับอักษรไทย/อังกฤษและช่องว่างเท่านั้น • Thai/English letters & spaces only
-            </div>
+            <div class="note">Thai/English letters & spaces only</div>
           </div>
         </div>
 
-        <!-- D. Attendance -->
-        <div class="section-title">D. Attendance Info • วันที่เข้าร่วมงาน</div>
-
+        <div class="section-title">D. Attendance • วันที่เข้าร่วม</div>
         <div class="row">
           <div>
-            <label class="title">เลือกวันที่จะเข้าร่วม<span class="en"> / Which day(s) will you attend?</span> *</label>
-            <div class="inline-checks" id="attend_days_group">
-              <label><input type="checkbox" value="Wed 17 Dec"> <span>Wed 17 Dec</span></label>
-              <label><input type="checkbox" value="Thu 18 Dec"> <span>Thu 18 Dec</span></label>
-              <label><input type="checkbox" value="Fri 19 Dec"> <span>Fri 19 Dec</span></label>
-              <label><input type="checkbox" value="Sat 20 Dec"> <span>Sat 20 Dec</span></label>
-              <label><input type="checkbox" value="Sun 21 Dec"> <span>Sun 21 Dec</span></label>
+            <label class="title">เลือกวันที่จะเข้าร่วม (เลือกได้มากกว่า 1 วัน) *</label>
+            <div class="inline-checks" id="paper-days">
+              <label><input type="checkbox" value="Wed 17 Dec">Wed 17</label>
+              <label><input type="checkbox" value="Thu 18 Dec">Thu 18</label>
+              <label><input type="checkbox" value="Fri 19 Dec">Fri 19</label>
+              <label><input type="checkbox" value="Sat 20 Dec">Sat 20</label>
+              <label><input type="checkbox" value="Sun 21 Dec">Sun 21</label>
             </div>
-            <div class="note">กรุณาเลือกอย่างน้อย 1 วัน • Please select at least one day.</div>
+            <div class="note">ควรเลือกอย่างน้อย 1 วัน</div>
           </div>
         </div>
 
-        <!-- E. Consent -->
-        <div class="section-title">E. Media & Personal Data • ข้อกำหนดสื่อและข้อมูลส่วนบุคคล</div>
-
+        <div class="section-title">E. Consent • การยินยอม</div>
         <div class="row">
           <div>
-            <label class="title">
-              ข้อกำหนดเกี่ยวกับสื่อภาพ/วิดีโอและข้อมูลส่วนบุคคล
-              <span class="en">/ Media & Personal Data Conditions</span> *
-            </label>
-
-            <div class="consent-desc">
-              <strong>TH: การบันทึกภาพและวิดีโอ</strong><br>
-              ในการเข้าชมการแข่งขัน WGP#1 Waterjet World Cup 2025 ซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก
-              ท่านยินยอมให้ผู้จัดงานและพันธมิตร สามารถบันทึกภาพนิ่ง วิดีโอ และเสียงของท่าน เพื่อใช้ในสื่อประชาสัมพันธ์
-              โฆษณา ถ่ายทอดสด และสื่ออื่น ๆ โดยไม่ต้องขออนุญาตหรือจ่ายค่าตอบแทนใด ๆ เพิ่มเติม
-              การเข้าสู่พื้นที่จัดงาน ถือเป็นการให้ความยินยอมโดยสมบูรณ์ หากไม่ประสงค์ให้ถูกบันทึกภาพ
-              โปรดหลีกเลี่ยงบริเวณกล้องหรือพื้นที่ถ่ายทอดสด
-              <br><br>
-               <strong>EN: Media (Photo & Video)</strong><br>
-              By attending the WGP#1 Waterjet World Cup 2025, which includes live broadcasting and global media coverage,
-              you grant the event organizers and their partners the right to photograph, film, and record your image and voice
-              for use in promotions, advertising, live streams, and other media—without the need for further consent or compensation.
-              Entering the event area constitutes full and unconditional consent. If you do not wish to appear in such media,
-              please avoid camera zones or broadcast areas.
-            </div>
-
+            <p class="note">
+              การเข้าชมงานถือเป็นการยินยอมให้ผู้จัดงานบันทึกภาพนิ่ง/วิดีโอ/เสียง เพื่อใช้ในการถ่ายทอดสด
+              ประชาสัมพันธ์ และสื่ออื่น ๆ โดยไม่ต้องขออนุญาตหรือจ่ายค่าตอบแทนเพิ่มเติม
+            </p>
             <label class="consent-check">
-              <input type="checkbox" id="media_consent" required>
+              <input type="checkbox" id="paper-consent" required>
               <span class="consent-text">
-                <span>ฉันได้อ่านและยินยอมตามข้อกำหนดข้างต้นทั้งหมด</span>
-                <span>I have read and consent to all conditions above.</span>
+                <span>ฉันได้อ่านและยินยอมตามเงื่อนไขข้างต้น</span>
+                <span>I have read and consent to the conditions above.</span>
               </span>
             </label>
           </div>
         </div>
 
-        <button class="btn primary wide" type="submit" id="submit-btn">
-          ยืนยันรับบัตร Complimentary • Submit Complimentary Ticket Form
-        </button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;">
+          <button type="button" class="btn outline" id="back-from-paper">
+            ◀ กลับไปหน้าเจ้าหน้าที่ • Back
+          </button>
+          <button type="submit" class="btn primary">
+            ยืนยันข้อมูลและบันทึก • Confirm & Save
+          </button>
+        </div>
       </form>
     </div>
-
-    <div class="footer">© 2025 WGP#1 • Complementary Ticket Registration</div>
   </section>
 
-  <!-- SCREEN 2: THANK YOU -->
-  <section id="screen-thank" class="screen container hidden">
+  <!-- ============================================= -->
+  <!-- SCREEN 3 : DIGITAL SEARCH (PART 2 - DIGITAL) -->
+  <!-- ============================================= -->
+  <section id="screen-digital" class="screen container hidden">
+    <div class="card">
+      <div class="head">
+        <h2>Part 2 — Digital Complimentary (H-XXXX)</h2>
+        <p class="note">
+          ค้นหาข้อมูลผู้ลงทะเบียนจากเว็บไซต์โรงแรม แล้วให้ผู้รับสิทธิ์ยืนยัน Consent
+        </p>
+      </div>
+
+      <div class="body">
+        <div class="section-title">A. Search • ค้นหาผู้ลงทะเบียน</div>
+        <div class="row two">
+          <div>
+            <label class="title">ชื่อ-นามสกุล<span class="en"> / Full Name</span> *</label>
+            <input id="digital-search-name" placeholder="เช่น John Smith / สมชาย ใจดี">
+          </div>
+          <div>
+            <label class="title">รหัส H-XXXX (ถ้ามี)<span class="en"> / H-Code (optional)</span></label>
+            <input id="digital-search-code" placeholder="เช่น H-0123">
+          </div>
+        </div>
+        <button class="btn primary wide" id="digital-search-btn">
+          ค้นหา / Search
+        </button>
+
+        <div id="digital-results" class="result-list hidden"></div>
+        <div id="digital-note" class="note" style="margin-top:6px;"></div>
+
+        <div class="section-title" style="margin-top:20px;">B. Confirm & Consent</div>
+        <div class="row">
+          <div id="digital-selected-box" class="hidden">
+            <p class="note">
+              รายการที่เลือก:
+              <span id="digital-selected-name" style="font-weight:700;"></span>
+              <span id="digital-selected-meta" class="badge-small"></span>
+            </p>
+
+            <label class="consent-check">
+              <input type="checkbox" id="digital-consent">
+              <span class="consent-text">
+                <span>ฉันยืนยันการใช้สิทธิ์ Digital Complimentary และยินยอมตามเงื่อนไขสื่อ/ข้อมูลส่วนบุคคล</span>
+                <span>I confirm to redeem this Digital Complimentary and consent to the media & data conditions.</span>
+              </span>
+            </label>
+
+            <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+              <button class="btn outline" id="back-from-digital">
+                ◀ กลับไปหน้าเจ้าหน้าที่ • Back
+              </button>
+              <button class="btn primary" id="digital-confirm-btn">
+                ยืนยันรับสิทธิ์ • Confirm Redemption
+              </button>
+            </div>
+          </div>
+
+          <div id="digital-wait-box" class="note">
+            กรุณาค้นหาและเลือกชื่อผู้ลงทะเบียนก่อน จากนั้นจึงให้ผู้รับสิทธิ์อ่านและยืนยัน Consent
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================== -->
+  <!-- SCREEN 4 : TICKET PROCESSED -->
+  <!-- =========================== -->
+  <section id="screen-done" class="screen container hidden">
     <div class="card">
       <div class="thankfull">
-        <h2>THANK YOU!</h2>
+        <h2>Ticket Processed</h2>
         <p>
-          Thank you for being part of this world-class competition — we hope you enjoy an unforgettable and thrilling experience!<br><br>
-          ขอบคุณที่ร่วมเป็นส่วนหนึ่งของการแข่งขันระดับโลกครั้งนี้ — ขอให้คุณสนุกกับประสบการณ์สุดมันส์!
+          ตั๋ว Complimentary ของคุณได้รับการดำเนินการเรียบร้อยแล้ว<br>
+          กรุณาส่งต่อให้เจ้าหน้าที่เพื่อออกตั๋วจริงให้กับคุณ
         </p>
       </div>
       <div class="body" style="text-align:center">
-        <button class="btn dark" id="back-to-form">
-          กลับหน้าหลัก • Back to Home page
+        <button class="btn dark" id="done-back-to-start">
+          รับผู้ชมคนถัดไป • New Guest
         </button>
       </div>
     </div>
   </section>
 
+  <!-- ====================== -->
+  <!-- SCRIPTS (FLOW & DB)   -->
+  <!-- ====================== -->
   <script>
-    function showScreen(id) {
-      document.getElementById('screen-form').classList.add('hidden');
-      document.getElementById('screen-thank').classList.add('hidden');
+    function showScreen(id){
+      ['screen-staff','screen-paper','screen-digital','screen-done'].forEach(sid => {
+        document.getElementById(sid).classList.add('hidden');
+      });
       document.getElementById(id).classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // ประกอบ Ticket Code = 25-xxxxx จาก suffix
-    (function initTicketCode() {
-      const suffixInput = document.getElementById('ticket_code_suffix');
-      const fullCodeHidden = document.getElementById('ticket_code');
+    // ---------- STAFF FORM ----------
+    document.getElementById('staff-form').addEventListener('submit', function(e){
+      e.preventDefault();
+      const staff = document.getElementById('staff-name').value;
+      const day   = document.getElementById('checkin-day').value;
+      const type  = (document.querySelector('input[name="comp-type"]:checked') || {}).value;
 
-      suffixInput.addEventListener('input', function () {
-        this.value = this.value.replace(/[^0-9]/g, '');
-        if (this.value.length > 5) {
-          this.value = this.value.slice(0, 5);
-        }
-        if (this.value.length === 5) {
-          fullCodeHidden.value = '25-' + this.value;
-        } else {
-          fullCodeHidden.value = '';
-        }
-      });
-    })();
+      if (!staff || !day || !type) {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+        return;
+      }
 
-    // Submit -> Supabase insert
-    document.getElementById('comp-form').addEventListener('submit', async function (e) {
+      sessionData.staffName = staff;
+      sessionData.checkinDay = day;
+      sessionData.compType = type;
+      sessionData.digitalGuest = null;
+
+      if (type === 'paper') {
+        showScreen('screen-paper');
+      } else {
+        showScreen('screen-digital');
+      }
+    });
+
+    // ---------- PAPER: back button ----------
+    document.getElementById('back-from-paper').addEventListener('click', () => {
+      showScreen('screen-staff');
+    });
+
+    // ---------- PAPER: submit ----------
+    document.getElementById('paper-form').addEventListener('submit', async function(e){
       e.preventDefault();
 
-      // ==== ตรวจสอบ Ticket Code (5 หลัก) ====
-      const suffixInput = document.getElementById('ticket_code_suffix');
-      const ticketSuffix = (suffixInput.value || '').trim();
+      const suffix = (document.getElementById('paper-ticket-suffix').value || '').trim();
+      if (!/^[0-9]{5}$/.test(suffix)) {
+        alert('กรุณากรอกเลข 5 หลักท้ายของรหัสบัตร (เฉพาะตัวเลข) เช่น 00001');
+        return;
+      }
+      const ticketCode = '25-' + suffix;
 
-      if (!/^[0-9]{5}$/.test(ticketSuffix)) {
-        alert('กรุณากรอกเลข 5 หลักท้ายของรหัสบัตร (เฉพาะตัวเลข 0–9) เช่น 00001');
-        suffixInput.focus();
+      const first = document.getElementById('paper-firstname').value.trim();
+      const last  = document.getElementById('paper-lastname').value.trim();
+      if (!first || !last) {
+        alert('กรอกชื่อและนามสกุลให้ครบถ้วน');
         return;
       }
 
-      const ticketCode = '25-' + ticketSuffix;
-      document.getElementById('ticket_code').value = ticketCode;
-
-      // ==== ตรวจชื่อ ====
-      const firstNameTh = document.getElementById('guest_firstname_th').value.trim();
-      const lastNameTh  = document.getElementById('guest_lastname_th').value.trim();
-
-      if (!firstNameTh || !lastNameTh) {
-        alert('กรุณากรอกชื่อจริงและนามสกุลให้ครบถ้วน');
-        return;
-      }
-      const guestFullnameTh = firstNameTh + ' ' + lastNameTh;
-
-      // ==== ตรวจอย่างน้อย 1 วัน ====
-      const dayChecks = document.querySelectorAll('#attend_days_group input[type=checkbox]');
-      const selectedDays = [];
-      dayChecks.forEach(ch => { if (ch.checked) selectedDays.push(ch.value); });
-      if (selectedDays.length === 0) {
-        alert('กรุณาเลือกวันที่จะเข้าร่วมอย่างน้อย 1 วัน / Please select at least one day.');
+      const dayChecks = document.querySelectorAll('#paper-days input[type=checkbox]');
+      const days = [];
+      dayChecks.forEach(ch => { if (ch.checked) days.push(ch.value); });
+      if (!days.length) {
+        alert('กรุณาเลือกอย่างน้อย 1 วันที่จะเข้าร่วม');
         return;
       }
 
-      // ==== เช็คเลขซ้ำบน Supabase ====
-      try {
-        const { error: dupError, count } = await sb
-          .from('complementary_tickets')
-          .select('id', { count: 'exact', head: true })
-          .eq('ticket_code', ticketCode);
-
-        if (dupError) {
-          console.error('Duplicate check error:', dupError);
-          alert('ไม่สามารถตรวจสอบรหัสบัตรได้ในขณะนี้ กรุณาลองใหม่อีกครั้ง หรือแจ้งเจ้าหน้าที่');
-          return;
-        }
-
-        if (count && count > 0) {
-          alert('รหัสบัตร ' + ticketCode + ' ถูกใช้ไปแล้ว กรุณาใช้หมายเลขอื่น');
-          return;
-        }
-      } catch (err) {
-        console.error('Unexpected duplicate check error:', err);
-        alert('เกิดข้อผิดพลาดในการตรวจสอบรหัสบัตร กรุณาลองใหม่อีกครั้ง');
+      if (!document.getElementById('paper-consent').checked) {
+        alert('กรุณายืนยันการยินยอมก่อน');
         return;
       }
 
-      const btn = document.getElementById('submit-btn');
-      const oldText = btn.textContent;
-      btn.textContent = 'กำลังส่ง... / Submitting...';
+      const btn = this.querySelector('button[type=submit]');
+      const old = btn.textContent;
+      btn.textContent = 'กำลังบันทึก... / Saving...';
       btn.disabled = true;
 
       const payload = {
         submitted_at: new Date().toISOString(),
 
         ticket_code: ticketCode,
+        comp_type: 'paper',           // TODO: สร้าง column comp_type, staff_name, checkin_day บน Supabase ให้ตรง
+        staff_name: sessionData.staffName || null,
+        checkin_day: sessionData.checkinDay || null,
 
-        guest_title: null,
-        guest_fullname_th: guestFullnameTh,
+        guest_fullname_th: first + ' ' + last,
         guest_fullname_en: null,
-        guest_position: null,
-        guest_company: null,
-
-        guest_gender: document.getElementById('guest_gender').value || null,
-        guest_age_range: document.getElementById('guest_age_range').value || null,
+        guest_gender: document.getElementById('paper-gender').value || null,
+        guest_age_range: document.getElementById('paper-age').value || null,
 
         contact_email: null,
-        contact_phone: document.getElementById('contact_phone').value.trim() || null,
-        guest_country: document.getElementById('guest_country').value || null,
-        guest_city: document.getElementById('guest_city').value.trim() || null,
+        contact_phone: document.getElementById('paper-phone').value.trim() || null,
+        guest_country: document.getElementById('paper-country').value.trim() || null,
+        guest_city: document.getElementById('paper-city').value.trim() || null,
 
-        attend_days: selectedDays.join(', '),
+        attend_days: days.join(', '),
+        media_consent: true
+      };
 
-        media_consent: document.getElementById('media_consent').checked
+      try {
+        const { error } = await sb
+          .from('complementary_tickets')
+          .insert([payload]);  // TODO: table name ตามเดิมของคุณ
+
+        if (error) {
+          console.error('Supabase insert error (paper):', error);
+          alert('บันทึกไม่สำเร็จ กรุณาลองใหม่ หรือแจ้งเจ้าหน้าที่\n' + error.message);
+        } else {
+          document.getElementById('paper-form').reset();
+          showScreen('screen-done');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อระบบ กรุณาลองใหม่อีกครั้ง');
+      } finally {
+        btn.textContent = old;
+        btn.disabled = false;
+      }
+    });
+
+    // ---------- DIGITAL: back button ----------
+    document.getElementById('back-from-digital').addEventListener('click', () => {
+      showScreen('screen-staff');
+    });
+
+    // ---------- DIGITAL: search ----------
+    const resultsBox = document.getElementById('digital-results');
+    const noteBox    = document.getElementById('digital-note');
+    const selectedBox= document.getElementById('digital-selected-box');
+    const waitBox    = document.getElementById('digital-wait-box');
+
+    document.getElementById('digital-search-btn').addEventListener('click', async () => {
+      const name = document.getElementById('digital-search-name').value.trim();
+      const code = document.getElementById('digital-search-code').value.trim();
+
+      if (!name && !code) {
+        alert('กรุณากรอกอย่างน้อย ชื่อ-นามสกุล หรือรหัส H-XXXX ก่อนค้นหา');
+        return;
+      }
+
+      resultsBox.innerHTML = '';
+      resultsBox.classList.add('hidden');
+      noteBox.textContent = 'กำลังค้นหา... / Searching...';
+
+      try {
+        // TODO: ปรับชื่อ table / column ให้ตรงกับ Supabase ของคุณ
+        const query = sb
+          .from('digital_comps_pre_register')  // <- สมมุติ table
+          .select('*')
+          .limit(30);
+
+        if (name) {
+          query.ilike('full_name', '%' + name + '%');
+        }
+        if (code) {
+          query.eq('ticket_code', code);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error('Search error:', error);
+          noteBox.textContent = 'ค้นหาไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
+          return;
+        }
+
+        if (!data || !data.length) {
+          noteBox.textContent = 'ไม่พบข้อมูลที่ตรงกับคำค้นหา';
+          return;
+        }
+
+        noteBox.textContent = 'พบ ' + data.length + ' รายการ กรุณาเลือก 1 รายการ';
+        resultsBox.classList.remove('hidden');
+        resultsBox.innerHTML = '';
+
+        data.forEach(row => {
+          const item = document.createElement('div');
+          item.className = 'result-item';
+          item.dataset.id = row.id;
+
+          item.innerHTML = `
+            <div class="result-name">${row.full_name || '(ไม่ระบุชื่อ)'}</div>
+            <div class="result-meta">
+              Email: ${row.email || '-'} • Phone: ${row.phone || '-'} • Code: ${row.ticket_code || '-'}
+            </div>
+          `;
+
+          item.addEventListener('click', () => {
+            document.querySelectorAll('.result-item').forEach(i => i.classList.remove('selected'));
+            item.classList.add('selected');
+            sessionData.digitalGuest = row;
+
+            document.getElementById('digital-selected-name').textContent =
+              row.full_name || '(ไม่ระบุชื่อ)';
+            document.getElementById('digital-selected-meta').textContent =
+              (row.ticket_code ? 'H-code: ' + row.ticket_code : '');
+
+            selectedBox.classList.remove('hidden');
+            waitBox.classList.add('hidden');
+          });
+
+          resultsBox.appendChild(item);
+        });
+
+      } catch (err) {
+        console.error(err);
+        noteBox.textContent = 'เกิดข้อผิดพลาดในการค้นหา กรุณาลองใหม่';
+      }
+    });
+
+    // ---------- DIGITAL: confirm redemption ----------
+    document.getElementById('digital-confirm-btn').addEventListener('click', async () => {
+      if (!sessionData.digitalGuest) {
+        alert('กรุณาเลือกชื่อจากผลการค้นหาก่อน');
+        return;
+      }
+      if (!document.getElementById('digital-consent').checked) {
+        alert('กรุณาให้ผู้รับสิทธิ์ติ๊กยืนยัน Consent ก่อน');
+        return;
+      }
+
+      const g = sessionData.digitalGuest;
+
+      const btn = document.getElementById('digital-confirm-btn');
+      const old = btn.textContent;
+      btn.textContent = 'กำลังบันทึก... / Saving...';
+      btn.disabled = true;
+
+      const payload = {
+        submitted_at: new Date().toISOString(),
+
+        ticket_code: g.ticket_code || null,
+        comp_type: 'digital',
+        staff_name: sessionData.staffName || null,
+        checkin_day: sessionData.checkinDay || null,
+        linked_reg_id: g.id || null,   // TODO: เพิ่ม column นี้ใน Supabase ถ้าต้องการ
+
+        guest_fullname_th: g.full_name || null,
+        guest_fullname_en: null,
+        guest_gender: g.gender || null,
+        guest_age_range: g.age_range || null,
+
+        contact_email: g.email || null,
+        contact_phone: g.phone || null,
+        guest_country: g.country || null,
+        guest_city: g.city || null,
+
+        attend_days: null,  // ใน digital สมมุติว่าอยู่ในระบบเดิมแล้ว
+        media_consent: true
       };
 
       try {
@@ -561,28 +874,40 @@
           .insert([payload]);
 
         if (error) {
-          console.error('Supabase insert error:', error);
-
-          if (error.code === '23505') {
-            alert('รหัสบัตร ' + ticketCode + ' ถูกใช้ไปแล้วในระบบ กรุณาใช้หมายเลขอื่นหรือรีเช็กกับเจ้าหน้าที่');
-          } else {
-            alert('บันทึกข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง หรือแจ้งเจ้าหน้าที่\n\nError: ' + error.message);
-          }
+          console.error('Supabase insert error (digital):', error);
+          alert('บันทึกไม่สำเร็จ กรุณาลองใหม่ หรือแจ้งเจ้าหน้าที่\n' + error.message);
         } else {
-          document.getElementById('comp-form').reset();
-          showScreen('screen-thank');
+          // เคลียร์ฟอร์ม search
+          document.getElementById('digital-search-name').value = '';
+          document.getElementById('digital-search-code').value = '';
+          resultsBox.innerHTML = '';
+          resultsBox.classList.add('hidden');
+          selectedBox.classList.add('hidden');
+          waitBox.classList.remove('hidden');
+          document.getElementById('digital-consent').checked = false;
+          noteBox.textContent = '';
+
+          showScreen('screen-done');
         }
       } catch (err) {
-        console.error('Unexpected error:', err);
-        alert('เกิดข้อผิดพลาดในการเชื่อมต่อระบบ กรุณาลองใหม่อีกครั้ง');
+        console.error(err);
+        alert('เกิดข้อผิดพลาดในการเชื่อมต่อระบบ กรุณาลองใหม่');
       } finally {
-        btn.textContent = oldText;
+        btn.textContent = old;
         btn.disabled = false;
       }
     });
 
-    document.getElementById('back-to-form').addEventListener('click', function () {
-      showScreen('screen-form');
+    // ---------- DONE: back to start ----------
+    document.getElementById('done-back-to-start').addEventListener('click', () => {
+      // reset ทุกอย่างแบบง่าย ๆ
+      document.getElementById('staff-form').reset();
+      document.getElementById('paper-form').reset();
+      sessionData.staffName = '';
+      sessionData.checkinDay = '';
+      sessionData.compType = '';
+      sessionData.digitalGuest = null;
+      showScreen('screen-staff');
     });
   </script>
 </body>
