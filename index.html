@@ -14,13 +14,14 @@
 
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // เก็บค่าระหว่าง Part 1/Part 2
-    const sessionData = {
-      staffName: '',
-      checkinDay: '',
-      compType: '',       // 'paper' | 'digital'
-      digitalGuest: null  // เก็บ object ผู้ที่ค้นหาเจอใน flow digital (จาก hotel_complimentary_tickets)
-    };
+   // เก็บค่าระหว่าง Part 1/Part 2
+const sessionData = {
+  staffName: '',
+  checkinDay: '',
+  compType: '',         // 'paper' | 'digital'
+  ticketCode: '',       // ⭐ เพิ่มบรรทัดนี้
+  digitalGuest: null
+};
   </script>
 
   <style>
@@ -323,58 +324,86 @@
       </div>
 
       <form class="body" id="staff-form">
-        <div class="section-title">A. Staff • เจ้าหน้าที่ผู้รับเรื่อง</div>
-        <div class="row two">
-          <div>
-            <label class="title">เจ้าหน้าที่<span class="en"> / Staff</span> *</label>
-            <select id="staff-name" required>
-              <option value="">— เลือกเจ้าหน้าที่ / Select —</option>
-              <option>เจ้าหน้าที่ A</option>
-              <option>เจ้าหน้าที่ B</option>
-              <option>เจ้าหน้าที่ C</option>
-              <option>เจ้าหน้าที่ D</option>
-              <option>เจ้าหน้าที่ E</option>
-              <option>เจ้าหน้าที่ F</option>
-            </select>
-          </div>
-          <div>
-            <label class="title">วันเช็คอิน<span class="en"> / Check-in Date</span> *</label>
-            <select id="checkin-day" required>
-              <option value="">— เลือกวันเข้า / Select —</option>
-              <option value="2025-12-17">Wed 17 Dec 2025</option>
-              <option value="2025-12-18">Thu 18 Dec 2025</option>
-              <option value="2025-12-19">Fri 19 Dec 2025</option>
-              <option value="2025-12-20">Sat 20 Dec 2025</option>
-              <option value="2025-12-21">Sun 21 Dec 2025</option>
-            </select>
-          </div>
+  <div class="section-title">A. Staff • เจ้าหน้าที่ผู้รับเรื่อง</div>
+  <div class="row two">
+    <div>
+      <label class="title">เจ้าหน้าที่<span class="en"> / Staff</span> *</label>
+      <select id="staff-name" required>
+        <option value="">— เลือกเจ้าหน้าที่ / Select —</option>
+        <option>เจ้าหน้าที่ A</option>
+        <option>เจ้าหน้าที่ B</option>
+        <option>เจ้าหน้าที่ C</option>
+        <option>เจ้าหน้าที่ D</option>
+        <option>เจ้าหน้าที่ E</option>
+        <option>เจ้าหน้าที่ F</option>
+      </select>
+    </div>
+    <div>
+      <label class="title">วันเช็คอิน<span class="en"> / Check-in Date</span> *</label>
+      <select id="checkin-day" required>
+        <option value="">— เลือกวันเข้า / Select —</option>
+        <option value="2025-12-17">Wed 17 Dec 2025</option>
+        <option value="2025-12-18">Thu 18 Dec 2025</option>
+        <option value="2025-12-19">Fri 19 Dec 2025</option>
+        <option value="2025-12-20">Sat 20 Dec 2025</option>
+        <option value="2025-12-21">Sun 21 Dec 2025</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section-title">B. Complimentary Type • ช่องทางการได้รับสิทธิ์</div>
+  <div class="row">
+    <div class="comp-type-group">
+      <label class="comp-type-option">
+        <input type="radio" name="comp-type" value="paper" required id="comp-type-paper">
+        <div class="comp-type-text">
+          <strong>Complimentary Ticket (25-XXXXX)</strong>
+          <span>บัตร Complimentary Ticket แบบกระดาษ มีเลขรันขึ้นต้นด้วย 25-XXXXX (กรอกโดยเจ้าหน้าที่)</span>
         </div>
+      </label>
 
-        <div class="section-title">B. Complimentary Type • ช่องทางการได้รับสิทธิ์</div>
-        <div class="row">
-          <div class="comp-type-group">
-            <label class="comp-type-option">
-              <input type="radio" name="comp-type" value="paper" required>
-              <div class="comp-type-text">
-                <strong>Complimentary Ticket (25-XXXXX)</strong>
-                <span>บัตร Complimentary Ticket แบบกระดาษ มีเลขรันขึ้นต้นด้วย 25-XXXXX (กรอกโดยเจ้าหน้าที่)</span>
-              </div>
-            </label>
-
-            <label class="comp-type-option">
-              <input type="radio" name="comp-type" value="digital">
-              <div class="comp-type-text">
-                <strong>Digital Complimentary (H-XXXX)</strong>
-                <span>ได้รับจากการลงทะเบียนผ่านเว็บไซต์โรงแรม มีเลขอ้างอิง H-XXXX</span>
-              </div>
-            </label>
-          </div>
+      <label class="comp-type-option">
+        <input type="radio" name="comp-type" value="digital" id="comp-type-digital">
+        <div class="comp-type-text">
+          <strong>Digital Complimentary (H-XXXX)</strong>
+          <span>ได้รับจากการลงทะเบียนผ่านเว็บไซต์โรงแรม มีเลขอ้างอิง H-XXXX</span>
         </div>
+      </label>
+    </div>
+  </div>
 
-        <button type="submit" class="btn primary wide">
-          ดำเนินการต่อ • Continue
-        </button>
-      </form>
+  <!-- C. Ticket Code – เฉพาะกรณี Paper -->
+  <div class="section-title" id="staff-paper-section" style="display:none;">
+    C. Ticket Code • รหัสบัตร (เฉพาะกรณีบัตรกระดาษ)
+  </div>
+  <div class="row" id="staff-paper-row" style="display:none;">
+    <div>
+      <label class="title">รหัสบัตร Complimentary (25-XXXXX) *</label>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span style="
+          background:#f3f4f6;
+          padding:10px 14px;
+          border-radius:12px;
+          border:1px solid var(--border);
+          font-weight:600;
+        ">25-</span>
+        <input id="staff-paper-suffix"
+               type="text"
+               maxlength="5"
+               pattern="^[0-9]{5}$"
+               placeholder="กรอก 5 หลัก เช่น 00001"
+               style="flex:1;">
+      </div>
+      <div class="note">
+        *กรอกโดยเจ้าหน้าที่เท่านั้น • เฉพาะตัวเลข 5 หลักท้ายของรหัสบัตร เช่น 00001
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" class="btn primary wide">
+    ดำเนินการต่อ • Continue
+  </button>
+</form>
     </div>
 
     <div class="footer">© 2025 WGP#1 • Complimentary Flow</div>
@@ -394,28 +423,17 @@
 
       <form class="body" id="paper-form">
         <div class="section-title">A. Ticket Code • รหัสบัตร</div>
-        <div class="row">
-          <div>
-            <label class="title">รหัสบัตร Complimentary (25-XXXXX) *</label>
-            <div style="display:flex; align-items:center; gap:6px;">
-              <span style="
-                background:#f3f4f6;
-                padding:10px 14px;
-                border-radius:12px;
-                border:1px solid var(--border);
-                font-weight:600;
-              ">25-</span>
-              <input id="paper-ticket-suffix"
-                     type="text"
-                     maxlength="5"
-                     pattern="^[0-9]{5}$"
-                     required
-                     placeholder="กรอก 5 หลัก เช่น 00001"
-                     style="flex:1;">
-            </div>
-            <div class="note">*ส่วนนี้กรอกโดยเจ้าหน้าที่ • เฉพาะตัวเลข 5 หลักท้ายของรหัสบัตร เช่น 00001</div>
-          </div>
-        </div>
+<div class="row">
+  <div>
+    <label class="title">รหัสบัตร Complimentary (25-XXXXX)</label>
+    <div style="padding:12px 16px; border-radius:12px; border:1px solid var(--border); background:#f9fafb; font-weight:700;">
+      <span id="paper-ticket-display">25-XXXXX</span>
+    </div>
+    <div class="note">
+      กรอกโดยเจ้าหน้าที่เรียบร้อยแล้ว • ผู้ลงทะเบียนไม่ต้องแก้ไขส่วนนี้
+    </div>
+  </div>
+</div>
 
         <div class="section-title">B. Guest Info • ข้อมูลผู้รับสิทธิ์</div>
         <div class="row two">
@@ -602,29 +620,69 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    // toggle ช่องกรอกเลขบัตร ตามประเภทที่เลือก
+(function(){
+  const paperRadio  = document.getElementById('comp-type-paper');
+  const digitalRadio= document.getElementById('comp-type-digital');
+  const sec   = document.getElementById('staff-paper-section');
+  const row   = document.getElementById('staff-paper-row');
+
+  function refreshPaperCodeVisibility() {
+    if (paperRadio.checked) {
+      sec.style.display = '';
+      row.style.display = '';
+    } else {
+      sec.style.display = 'none';
+      row.style.display = 'none';
+    }
+  }
+  if (paperRadio && digitalRadio) {
+    paperRadio.addEventListener('change', refreshPaperCodeVisibility);
+    digitalRadio.addEventListener('change', refreshPaperCodeVisibility);
+  }
+})();
+    
     // ---------- STAFF FORM ----------
     document.getElementById('staff-form').addEventListener('submit', function(e){
-      e.preventDefault();
-      const staff = document.getElementById('staff-name').value;
-      const day   = document.getElementById('checkin-day').value;
-      const type  = (document.querySelector('input[name="comp-type"]:checked') || {}).value;
+  e.preventDefault();
+  const staff = document.getElementById('staff-name').value;
+  const day   = document.getElementById('checkin-day').value;
+  const type  = (document.querySelector('input[name="comp-type"]:checked') || {}).value;
 
-      if (!staff || !day || !type) {
-        alert('กรุณากรอกข้อมูลให้ครบถ้วน');
-        return;
-      }
+  if (!staff || !day || !type) {
+    alert('กรุณากรอกข้อมูลให้ครบถ้วน');
+    return;
+  }
 
-      sessionData.staffName = staff;
-      sessionData.checkinDay = day;
-      sessionData.compType = type;
-      sessionData.digitalGuest = null;
+  // ถ้าเป็นบัตรกระดาษ ต้องให้เจ้าหน้าที่กรอกเลข 25-XXXXX ก่อน
+  let ticketCode = null;
+  if (type === 'paper') {
+    const suffix = (document.getElementById('staff-paper-suffix').value || '').trim();
+    if (!/^[0-9]{5}$/.test(suffix)) {
+      alert('กรุณากรอกเลข 5 หลักท้ายของรหัสบัตร (เฉพาะตัวเลข) เช่น 00001');
+      document.getElementById('staff-paper-suffix').focus();
+      return;
+    }
+    ticketCode = '25-' + suffix;
+  }
 
-      if (type === 'paper') {
-        showScreen('screen-paper');
-      } else {
-        showScreen('screen-digital');
-      }
-    });
+  sessionData.staffName   = staff;
+  sessionData.checkinDay  = day;
+  sessionData.compType    = type;
+  sessionData.ticketCode  = ticketCode;   // เก็บไว้ใช้ในหน้าผู้ลงทะเบียน
+  sessionData.digitalGuest = null;
+
+  if (type === 'paper') {
+    // อัปเดตรหัสให้ผู้ลงทะเบียนเห็น (อ่านอย่างเดียว)
+    const display = document.getElementById('paper-ticket-display');
+    if (display && ticketCode) {
+      display.textContent = ticketCode;
+    }
+    showScreen('screen-paper');
+  } else {
+    showScreen('screen-digital');
+  }
+});
 
     // ---------- PAPER: back button ----------
     document.getElementById('back-from-paper').addEventListener('click', () => {
@@ -633,76 +691,76 @@
 
     // ---------- PAPER: submit ----------
     document.getElementById('paper-form').addEventListener('submit', async function(e){
-      e.preventDefault();
+  e.preventDefault();
 
-      const suffix = (document.getElementById('paper-ticket-suffix').value || '').trim();
-      if (!/^[0-9]{5}$/.test(suffix)) {
-        alert('กรุณากรอกเลข 5 หลักท้ายของรหัสบัตร (เฉพาะตัวเลข) เช่น 00001');
-        return;
-      }
-      const ticketCode = '25-' + suffix;
+  // ใช้เลขจาก Staff เท่านั้น
+  const ticketCode = sessionData.ticketCode;
+  if (!ticketCode) {
+    alert('ไม่พบรหัสบัตรจากส่วนเจ้าหน้าที่ กรุณากลับไปหน้าก่อน แล้วกรอกเลขบัตรใหม่อีกครั้ง');
+    showScreen('screen-staff');
+    return;
+  }
 
-      const first = document.getElementById('paper-firstname').value.trim();
-      const last  = document.getElementById('paper-lastname').value.trim();
-      if (!first || !last) {
-        alert('กรอกชื่อและนามสกุลให้ครบถ้วน');
-        return;
-      }
+  const first = document.getElementById('paper-firstname').value.trim();
+  const last  = document.getElementById('paper-lastname').value.trim();
+  if (!first || !last) {
+    alert('กรอกชื่อและนามสกุลให้ครบถ้วน');
+    return;
+  }
 
-      if (!document.getElementById('paper-consent').checked) {
-        alert('กรุณาให้ผู้รับสิทธิ์ติ๊กยืนยันการยินยอมก่อน');
-        return;
-      }
+  if (!document.getElementById('paper-consent').checked) {
+    alert('กรุณาให้ผู้รับสิทธิ์ติ๊กยืนยันการยินยอมก่อน');
+    return;
+  }
 
-      const btn = this.querySelector('button[type=submit]');
-      const old = btn.textContent;
-      btn.textContent = 'กำลังบันทึก... / Saving...';
-      btn.disabled = true;
+  const btn = this.querySelector('button[type=submit]');
+  const old = btn.textContent;
+  btn.textContent = 'กำลังบันทึก... / Saving...';
+  btn.disabled = true;
 
-      // payload ให้ตรงกับตาราง complementary_tickets
-      const payload = {
-        submitted_at: new Date().toISOString(),
+  const payload = {
+    submitted_at: new Date().toISOString(),
 
-        comp_type: 'paper',
-        staff_name: sessionData.staffName || null,
-        checkin_day: sessionData.checkinDay || null,  // ใช้วันจาก Staff
-        ticket_code: ticketCode,
-        hotel_ticket_id: null,
+    comp_type: 'paper',
+    staff_name: sessionData.staffName || null,
+    checkin_day: sessionData.checkinDay || null,  // จาก Staff
+    ticket_code: ticketCode,
+    hotel_ticket_id: null,
 
-        guest_first_name: first,
-        guest_last_name: last,
-        guest_gender: document.getElementById('paper-gender').value || null,
-        guest_age_group: document.getElementById('paper-age').value || null,
+    guest_first_name: first,
+    guest_last_name: last,
+    guest_gender: document.getElementById('paper-gender').value || null,
+    guest_age_group: document.getElementById('paper-age').value || null,
 
-        contact_phone: document.getElementById('paper-phone').value.trim() || null,
-        contact_email: null,
-        guest_country: document.getElementById('paper-country').value.trim() || null,
-        guest_city: document.getElementById('paper-city').value.trim() || null,
+    contact_phone: document.getElementById('paper-phone').value.trim() || null,
+    contact_email: null,
+    guest_country: document.getElementById('paper-country').value.trim() || null,
+    guest_city: document.getElementById('paper-city').value.trim() || null,
 
-        attend_days: null,        // ไม่ต้องให้กรอกซ้ำ
-        media_consent: true
-      };
+    attend_days: null,
+    media_consent: true
+  };
 
-      try {
-        const { error } = await sb
-          .from('complementary_tickets')
-          .insert([payload]);
+  try {
+    const { error } = await sb
+      .from('complementary_tickets')
+      .insert([payload]);
 
-        if (error) {
-          console.error('Supabase insert error (paper):', error);
-          alert('บันทึกไม่สำเร็จ กรุณาลองใหม่ หรือแจ้งเจ้าหน้าที่\n' + error.message);
-        } else {
-          document.getElementById('paper-form').reset();
-          showScreen('screen-done');
-        }
-      } catch (err) {
-        console.error(err);
-        alert('เกิดข้อผิดพลาดในการเชื่อมต่อระบบ กรุณาลองใหม่อีกครั้ง');
-      } finally {
-        btn.textContent = old;
-        btn.disabled = false;
-      }
-    });
+    if (error) {
+      console.error('Supabase insert error (paper):', error);
+      alert('บันทึกไม่สำเร็จ กรุณาลองใหม่ หรือแจ้งเจ้าหน้าที่\n' + error.message);
+    } else {
+      document.getElementById('paper-form').reset();
+      showScreen('screen-done');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('เกิดข้อผิดพลาดในการเชื่อมต่อระบบ กรุณาลองใหม่อีกครั้ง');
+  } finally {
+    btn.textContent = old;
+    btn.disabled = false;
+  }
+});
 
     // ---------- DIGITAL: back button ----------
     document.getElementById('back-from-digital').addEventListener('click', () => {
