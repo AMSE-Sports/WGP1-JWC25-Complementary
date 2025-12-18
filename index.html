@@ -919,7 +919,18 @@ const sessionData = {
 
       // payload ผูกกับ hotel_complimentary_tickets ผ่าน hotel_ticket_id
       const fullName = `${g.first_name || ''} ${g.last_name || ''}`.trim();
+      
+// ตรวจสอบก่อน insert ว่ามี ticket_code นี้อยู่ใน table แล้วหรือไม่
+const { data: existing, error: checkError } = await sb
+  .from('complementary_tickets')
+  .select('id')
+  .eq('ticket_code', g.registration_ref);
 
+if (existing && existing.length > 0) {
+  alert('รหัสนี้ถูกใช้งานไปแล้ว กรุณาตรวจสอบอีกครั้ง');
+  return;
+}
+      
       const payload = {
         submitted_at: new Date().toISOString(),
 
